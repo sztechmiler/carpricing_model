@@ -1,6 +1,8 @@
 from pymongo import MongoClient
 import pandas as pd
 import re
+from datetime import date
+
 from CarModel.Cars import Car 
 #to run mongodb in terminal run sudo service mongod status
 
@@ -10,7 +12,7 @@ def getValueFromString(strVal):
 
 
 
-def get_cars(brand="", model =""):
+def get_cars(brand="", model="", limit=0):
     if (model==""): 
         carQuery = {"Uszkodzony": { "$exists" : False }}
     else:
@@ -19,7 +21,7 @@ def get_cars(brand="", model =""):
     client = MongoClient()
     car_pricing_db = client["carPricing"]
     firstOffersCollection = car_pricing_db.firstOffers
-    cos = firstOffersCollection.find(carQuery).limit(50)
+    cos = firstOffersCollection.find(carQuery).limit(limit)
 
     data = pd.DataFrame(list(cos))
     # price, brand, model, fuel, millage, year, gearBox, capacity, power, features, drive):
@@ -43,3 +45,17 @@ def get_cars(brand="", model =""):
         car = Car(**carDict)
         cars.append(car)
     return cars
+
+def insert_db_pricing_model_poly3_allfeatures(brand, model, model_factors):
+    now = date.now()
+
+    client = MongoClient()
+    car_pricing_db = client.carPricing
+    features_collection = car_pricing_db.features
+    features_collection.insert_one(
+    {"brand": brand,
+     "moodel": model,
+     "poly": 3, 
+     "level_of_details": "high",
+     "update_time": now,
+     "model_factors": model_factors})
