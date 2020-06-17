@@ -1,10 +1,11 @@
 #bin/python3
-
-from CarModel import Car
+# from .. import CarModel
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn import linear_model
+import sklearn
+
 
 
 class PricingModel:
@@ -21,8 +22,10 @@ class PricingModel:
 
 
     def getModelParameters(self):
-        listOfCars =  [Car.carDict for Car in self.cars] #get list of dictionaries from cars i.e. for car in cars get cars.dict and put in into the list ...
-        data = pd.DataFrame(listOfCars) #should change to DataFrame
+        list_of_cars =  [Car.carDict for Car in self.cars] #get list of dictionaries from cars i.e. for car in cars get cars.dict and put in into the list ...
+        data = pd.DataFrame(list_of_cars) #should change to DataFrame
+        data.drop(columns=['brand', 'model'], inplace=True)
+
         data = pd.get_dummies(data)     #should get dummies i.e. manual_gearbox = 1, automat_gearbox = 0
         data = self.excludeStrangeUnites(data)
 
@@ -32,21 +35,51 @@ class PricingModel:
 
         #* here we start to build model ;-)
         #? set x and y of train and test (populations)
-        train_x = np.asanyarray(data_trainSet.drop(columns=['price'], inplace=False)) 
-        train_y = np.asanyarray(data_testSet[['price']])            
-        test_x = np.asanyarray(data_testSet.drop(columns=['price'], inplace=False)) 
-        test_y = np.asanyarray(data_testSet[['price']])
+        data_train_set_x = data_trainSet.drop(columns=['price'], inplace=False)
+        data_train_set_y = data_trainSet[['price']]
+        data_test_set_x = data_testSet.drop(columns=['price'], inplace=False)
+        data_test_set_y = data_testSet[['price']]
+        # print(data_train_set_x.columns)
+        # print(data_train_set_x.head(10))
+
         
-        #? set 3 degree polinomial -> simply we change train_x to have age, age^2, age^3, millage, millage^2, millage^3 (simpler than you think ;-)  
-        poly = PolynomialFeatures(degree=3)
+        poly_degree = 3
+        result_dict = {"intercept": 0}
+        for feature in data_test_set_x.columns:    
+            for i in range(poly_degree):
+                result_dict[feature + '_' + str(i+1)] = 0
+
+
+
+        train_x = np.asanyarray(data_train_set_x) 
+        train_y = np.asanyarray(data_train_set_y)            
+        test_x = np.asanyarray(data_test_set_x) 
+        test_y = np.asanyarray(data_test_set_y)
+        
+        #? set 3 degree polinomial -> simply we change train_x to have age, age^2, age^3, millage, millage^2, millage^3 (simpler then you think ;-)  
+        poly = PolynomialFeatures(degree=poly_degree)
         train_x_poly = poly.fit_transform(train_x)
 
         
         clf = linear_model.LinearRegression()
         train_y_ = clf.fit(train_x_poly, train_y) #! here we need to cahnge a bit ;-) 
         # The coefficients
-        print ('Coefficients: ', clf.coef_)
-        print ('Intercept: ',clf.intercept_)
+        # print ('Coefficients: ', clf.coef_)
+        # print ('Intercept: ',clf.intercept_)
+        intercept = clf.intercept_.tolist()[0]
+        factors = clf.coef_.tolist()[0]
+        index = 0
+        for k, v in result_dict.items():
+            if(k == "intercept"):
+                result_dict[k] = intercept
+            else:
+                result_dict[k] = factors[index]
+                index += 1
+
+        result = clf.intercept_.tolist()
+        result = result + clf.coef_.tolist()[0]
+        print(result_dict)
+        return result_dict
 
         test_x_poly = poly.fit_transform(test_x)
         predicted_test_y = clf.predict(test_x_poly)

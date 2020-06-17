@@ -1,17 +1,18 @@
 import datetime
 
 class Car:
-    def __init__(self, price, brand, model, fuel, millage, year, gearBox, capacity, power, features):
+    def __init__(self, price, brand, model, fuel, millage, year, gearBox, capacity, power, drive, **kwargs):
         self.price = price
         self.brand = brand 
         self.model = model
         self.fuel = fuel
         self.millage = millage
-        self.age = datetime.datetime.now().year - year
+        self.age = datetime.datetime.now().year - int(year)
         self.gearBox = gearBox
         self.capacity = capacity
         self.power = power
-        self.features = features
+        self.drive = drive
+        # self.features = features
         self.carDict = self.generateDict()
         
     def generateDict(self):
@@ -25,7 +26,8 @@ class Car:
             "gearBox": self.gearBox, 
             "capacity": self.capacity,
             "power": self.power,
-            "features": self.features,
+            "drive": self.drive,
+            # "features": self.features,
         }
         return carDict
 

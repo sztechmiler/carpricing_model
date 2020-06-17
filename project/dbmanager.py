@@ -2,6 +2,7 @@ from pymongo import MongoClient
 
 
 client = MongoClient()
+
 # carPricingDB = client["carPricing"]
 # firstOffersCollection = carPricingDB.create_collection("firstOffers")
 # firstOffersCollection.insert_one({"item":"initialone"})
