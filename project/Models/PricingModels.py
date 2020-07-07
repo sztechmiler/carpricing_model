@@ -73,49 +73,48 @@ class PricingModel:
             if(k == "intercept"):
                 result_dict[k] = intercept
             else:
-                result_dict[k] = factors[index]
+                if abs(factors[index]) < 0.0000000001:
+                    result_dict[k] = 0
+                else:
+                    result_dict[k] = factors[index]
                 index += 1
-
-        result = clf.intercept_.tolist()
-        result = result + clf.coef_.tolist()[0]
-        print(result_dict)
         return result_dict
 
-        test_x_poly = poly.fit_transform(test_x)
-        predicted_test_y = clf.predict(test_x_poly)
+        # test_x_poly = poly.fit_transform(test_x)
+        # predicted_test_y = clf.predict(test_x_poly)
 
-        meanAbsoluteError = sklearn.metrics.mean_absolute_error(test_y, predicted_test_y)
-        print("Mean absolute error: %.2f" % meanAbsoluteError)
-        r2Score = sklearn.metrics.r2_score(test_y, predicted_test_y)
-        print("R2-score: %.2f" % r2Score )
-        meanSquareError = sklearn.metrics.mean_squared_error(test_y, predicted_test_y)
-        print("Mean squared error: %.2f" % meanSquareError)
-        errorAsPercentOfRealPrice = test_y.mean() / meanAbsoluteError;
-        print("In general each price is different by around: %.2f" % errorAsPercentOfRealPrice + "%")
-        # print p.get_feature_names(data.columns)
-        # plotModel()
-        # plot3DModel()
-        # plot3DModelRealData()
-        przebieg = 120200
-        age = 4
+        # meanAbsoluteError = sklearn.metrics.mean_absolute_error(test_y, predicted_test_y)
+        # print("Mean absolute error: %.2f" % meanAbsoluteError)
+        # r2Score = sklearn.metrics.r2_score(test_y, predicted_test_y)
+        # print("R2-score: %.2f" % r2Score )
+        # meanSquareError = sklearn.metrics.mean_squared_error(test_y, predicted_test_y)
+        # print("Mean squared error: %.2f" % meanSquareError)
+        # errorAsPercentOfRealPrice = test_y.mean() / meanAbsoluteError;
+        # print("In general each price is different by around: %.2f" % errorAsPercentOfRealPrice + "%")
+        # # print p.get_feature_names(data.columns)
+        # # plotModel()
+        # # plot3DModel()
+        # # plot3DModelRealData()
+        # przebieg = 120200
+        # age = 4
 
-        intercept = clf.intercept_[0]
-        przebieg_coef = clf.coef_[0][1]
-        age_coef = clf.coef_[0][2]
-        przebieg2_coef = clf.coef_[0][3]
-        przebieg_age_coef = clf.coef_[0][4]
-        age2_coef = clf.coef_[0][5]
-        przebieg3_coef = clf.coef_[0][6]
-        przebieg2_age_coef = clf.coef_[0][7]
-        przebieg_age2_coef = clf.coef_[0][8]
-        age3_coef = clf.coef_[0][9]
+        # intercept = clf.intercept_[0]
+        # przebieg_coef = clf.coef_[0][1]
+        # age_coef = clf.coef_[0][2]
+        # przebieg2_coef = clf.coef_[0][3]
+        # przebieg_age_coef = clf.coef_[0][4]
+        # age2_coef = clf.coef_[0][5]
+        # przebieg3_coef = clf.coef_[0][6]
+        # przebieg2_age_coef = clf.coef_[0][7]
+        # przebieg_age2_coef = clf.coef_[0][8]
+        # age3_coef = clf.coef_[0][9]
 
 
-        price = intercept + np.power(przebieg, 1) * przebieg_coef + np.power(przebieg, 2) *przebieg2_coef + np.power(przebieg, 3) * przebieg3_coef +\
-                    np.power(age, 1) * age_coef + np.power(age, 2)* age2_coef + np.power(age,3)*age3_coef +\
-                    przebieg * age * przebieg_age_coef + np.power(przebieg, 2) * age * przebieg2_age_coef + np.power(age,2) * przebieg * przebieg_age2_coef
+        # price = intercept + np.power(przebieg, 1) * przebieg_coef + np.power(przebieg, 2) *przebieg2_coef + np.power(przebieg, 3) * przebieg3_coef +\
+        #             np.power(age, 1) * age_coef + np.power(age, 2)* age2_coef + np.power(age,3)*age3_coef +\
+        #             przebieg * age * przebieg_age_coef + np.power(przebieg, 2) * age * przebieg2_age_coef + np.power(age,2) * przebieg * przebieg_age2_coef
 
-        print("cena to: " + str(price))
+        # print("cena to: " + str(price))
 
 
         

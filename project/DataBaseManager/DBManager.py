@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import pandas as pd
 import re
-from datetime import date
+from datetime import datetime
 
 from CarModel.Cars import Car 
 #to run mongodb in terminal run sudo service mongod status
@@ -46,16 +46,48 @@ def get_cars(brand="", model="", limit=0):
         cars.append(car)
     return cars
 
-def insert_db_pricing_model_poly3_allfeatures(brand, model, model_factors):
-    now = date.now()
-
+def insert_db_pricing_model_poly3_allfeatures(brand, model, model_parameters):
+    now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     client = MongoClient()
     car_pricing_db = client.carPricing
     features_collection = car_pricing_db.features
     features_collection.insert_one(
     {"brand": brand,
-     "moodel": model,
-     "poly": 3, 
+     "model": model,
+     "poly": 3,
      "level_of_details": "high",
      "update_time": now,
-     "model_factors": model_factors})
+     "model_factors": model_parameters})
+
+def get_unique_brands_with_model():
+    client = MongoClient()
+    car_pricing_db = client["carPricing"]
+    features_collection = car_pricing_db.features
+    unique_brands = features_collection.distinct(key='brand')
+    return unique_brands
+
+def get_unique_models_with_model(brand):
+    client = MongoClient()
+    car_pricing_db = client["carPricing"]
+    features_collection = car_pricing_db.features
+    query = {"brand": brand}
+
+    unique_models = features_collection.distinct(key='model', query=query)
+    return unique_models
+
+
+def get_unique_brands():
+    client = MongoClient()
+    car_pricing_db = client["carPricing"]
+    firstOffersCollection = car_pricing_db.firstOffers
+    unique_brands = firstOffersCollection.distinct(key='Marka pojazdu')
+    return unique_brands
+
+def get_unique_modles(brand):
+    client = MongoClient()
+    car_pricing_db = client["carPricing"]
+    firstOffersCollection = car_pricing_db.firstOffers
+    query = {"Marka pojazdu": brand}
+
+    unique_models = firstOffersCollection.distinct(key='Model pojazdu', query=query)
+    return unique_models
